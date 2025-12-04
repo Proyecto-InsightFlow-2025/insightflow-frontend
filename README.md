@@ -1,73 +1,159 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# InsightFlow — Frontend Application
 
-Currently, two official plugins are available:
+Aplicación web desarrollada con **React + Vite**, que funciona como la interfaz oficial del ecosistema **InsightFlow**.
+Actualmente está integrada con el **Users Service**, y cuenta con despliegue automático en **Firebase Hosting** mediante CI/CD.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+---
 
-## React Compiler
+## Arquitectura y Diseño
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### Tecnologías Base
 
-## Expanding the ESLint configuration
+* **React 18 + TypeScript** (creado con Vite)
+* **TailwindCSS** para estilos
+* **Lucide React** para iconos
+* **React Router DOM** para navegación SPA
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Organización de la App
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+* **SPA modularizada** (Single Page Application)
+* **Capa de servicios (`src/services`)**
+  Abstracción para consumir APIs REST.
+* **Context API (AuthContext)**
+  Manejo del estado global de autenticación.
+* **Componentes Reutilizables**
+  Ejemplo: `ProtectedRoute` para proteger páginas.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Seguridad (Naive Auth)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+El frontend usa una estrategia simple de autenticación:
+
+1. Tras login, el backend devuelve el **ID del usuario**.
+2. Ese ID se guarda en **localStorage**.
+3. Para acciones sensibles (PATCH/DELETE), el frontend agrega el parámetro:
+
+   ```
+   ?requestUserId=<userId>
+   ```
+4. El backend valida si el usuario está autorizado.
+
+> No se utiliza JWT.
+
+---
+
+## Despliegue (CI/CD)
+
+Pipeline automatizado mediante **GitHub Actions**:
+
+### CI
+
+* Instala dependencias
+* Ejecuta build (`npm run build`)
+
+### CD
+
+* Despliega automáticamente a Firebase Hosting
+
+### Producción
+
+```
+https://insightflow-frontend.web.app
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+(Reemplaza con tu URL si es necesario)
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+---
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Requisitos Previos
+
+Necesitas:
+
+* **Node.js v18 o superior**
+* **NPM**
+* Conexión a internet para consumir el backend (Render)
+
+---
+
+## Ejecución en Local
+
+### 1. Clonar repositorio
+
+```bash
+git clone https://github.com/Proyecto-InsightFlow-2025/insightflow-frontend.git
+cd insightflow-frontend
+```
+
+### 2. Instalar dependencias
+
+```bash
+npm install
+```
+
+### 3. URL de User Service
+
+Por defecto apunta al backend en producción.
+
+```
+VITE_API_URL=https://insightflow-users-service.onrender.com
+```
+
+### 4. Ejecutar la app
+
+```bash
+npm run dev
+```
+
+La app estará disponible en:
+
+```
+http://localhost:5173
+```
+
+---
+
+## Integración con Servicios (Users Service)
+
+El frontend implementa todas las operaciones del backend de usuarios.
+
+### Endpoints Consumidos
+
+#### Registro
+
+**POST /user**
+→ Formulario de registro validado.
+
+#### Login
+
+**POST /user/login**
+
+#### Visualización de Perfil
+
+**GET /user/{id}**
+
+#### Actualización de Perfil
+
+**PATCH /user/{id}?requestUserId={id}`**
+→ Se solicita confirmación de contraseña.
+
+#### Eliminación de Cuenta
+
+**DELETE /user/{id}?requestUserId={id}`**
+→ Logout automático.
+
+---
+
+## Estructura del Proyecto
+
+```
+src/
+├── components/         # Componentes reutilizables (ProtectedRoute, Layouts, etc.)
+├── context/            # AuthContext (estado global)
+├── pages/              # Vistas principales (Login, Register, Profile)
+├── services/           # Comunicación con APIs REST
+│   ├── apicontext.ts   # Funciones y headers base
+│   ├── userservice.ts  # Integración con Users Service
+│   └── api.ts          # Configuración del cliente HTTP
+├── types/              # Interfaces/DTOs compartidos
+└── App.tsx             # Rutas principales de la aplicación
 ```
