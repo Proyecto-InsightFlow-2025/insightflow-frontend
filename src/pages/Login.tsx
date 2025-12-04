@@ -1,28 +1,28 @@
-import React, { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { Mail, Lock, Loader } from 'lucide-react';
-import { api } from '../services/api';
-import { useAuth } from '../context/useAuth';
+import React, { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { Mail, Lock, Loader } from "lucide-react";
+import { userService } from "../services";
+import { useAuth } from "../context/useAuth";
 
 export const Login: React.FC = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { login } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    setError("");
     setLoading(true);
 
     try {
-      const response = await api.login({ email, password });
+      const response = await userService.login({ email, password });
       login(response.id);
-      navigate('/profile');
+      navigate("/profile");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed');
+      setError(err instanceof Error ? err.message : "Hubo un error de conexión con el servidor al iniciar sesión");
     } finally {
       setLoading(false);
     }
@@ -35,7 +35,9 @@ export const Login: React.FC = () => {
           <h1 className="text-3xl font-bold text-center mb-2 text-slate-900">
             InsightFlow
           </h1>
-          <p className="text-center text-slate-600 mb-8">Inicia sesión en tu cuenta</p>
+          <p className="text-center text-slate-600 mb-8">
+            Inicia sesión en tu cuenta
+          </p>
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
@@ -89,15 +91,18 @@ export const Login: React.FC = () => {
                   Entrando...
                 </>
               ) : (
-                'Iniciar Sesión'
+                "Iniciar Sesión"
               )}
             </button>
           </form>
 
           <div className="mt-6 pt-6 border-t border-slate-200">
             <p className="text-center text-slate-600 text-sm">
-              ¿No tienes cuenta?{' '}
-              <Link to="/register" className="text-blue-600 hover:text-blue-700 font-medium">
+              ¿No tienes cuenta?{" "}
+              <Link
+                to="/register"
+                className="text-blue-600 hover:text-blue-700 font-medium"
+              >
                 Regístrate
               </Link>
             </p>

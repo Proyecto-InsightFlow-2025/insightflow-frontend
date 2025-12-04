@@ -1,8 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { User, LogOut, Save, X, Trash2, Loader, AlertCircle } from 'lucide-react';
-import { api, type User as UserType } from '../services/api';
-import { useAuth } from '../context/useAuth';
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  User,
+  LogOut,
+  Save,
+  X,
+  Trash2,
+  Loader,
+  AlertCircle,
+} from "lucide-react";
+import { userService } from "../services";
+import { type User as UserType } from "../services/types";
+import { useAuth } from "../context/useAuth";
 
 export const Profile: React.FC = () => {
   const { userId, logout } = useAuth();
@@ -10,44 +19,44 @@ export const Profile: React.FC = () => {
   const [user, setUser] = useState<UserType | null>(null);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState(false);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
   const [deleting, setDeleting] = useState(false);
 
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    username: '',
-    password: '',
-    dateOfBirth: '',
-    address: '',
-    phoneNumber: '',
+    firstName: "",
+    lastName: "",
+    email: "",
+    username: "",
+    password: "",
+    dateOfBirth: "",
+    address: "",
+    phoneNumber: "",
   });
 
   useEffect(() => {
     if (!userId) {
-      navigate('/login');
+      navigate("/login");
       return;
     }
 
     const fetchUser = async () => {
       try {
-        const userData = await api.getUserById(userId);
+        const userData = await userService.getUserById(userId);
         console.log(userData);
         setUser(userData);
         setFormData({
-          firstName: `${userData.firstName|| ''}`.trim(),
-          lastName: `${userData.lastName || ''}`.trim(),
-          email: userData.email || '',
-          username: userData.username || '',
-          password: '',
-          dateOfBirth: userData.dateOfBirth || '',
-          address: userData.address || '',
-          phoneNumber: userData.phoneNumber || '',
+          firstName: `${userData.firstName || ""}`.trim(),
+          lastName: `${userData.lastName || ""}`.trim(),
+          email: userData.email || "",
+          username: userData.username || "",
+          password: "",
+          dateOfBirth: userData.dateOfBirth || "",
+          address: userData.address || "",
+          phoneNumber: userData.phoneNumber || "",
         });
       } catch {
-        setError('Error al cargar el perfil');
+        setError("Error al cargar el perfil");
       } finally {
         setLoading(false);
       }
@@ -67,44 +76,52 @@ export const Profile: React.FC = () => {
   const handleSave = async () => {
     if (!userId) return;
 
-    setError('');
-    setSuccess('');
+    setError("");
+    setSuccess("");
 
     try {
-      await api.updateUser(userId, formData);
-      const updatedUser = await api.getUserById(userId);
+      await userService.updateUser(userId, formData);
+      const updatedUser = await userService.getUserById(userId);
       setUser(updatedUser);
       setEditing(false);
-      setSuccess('Perfil actualizado exitósamente');
-      setTimeout(() => setSuccess(''), 3000);
+      setSuccess("Perfil actualizado exitósamente");
+      setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al actualizar perfil');
+      setError(
+        err instanceof Error ? err.message : "Error al actualizar perfil"
+      );
     }
   };
 
   const handleDelete = async () => {
     if (!userId) return;
 
-    if (!window.confirm('¿Estás seguro de querer borrar tu cuenta? Esto no se puede revertir.')) {
+    if (
+      !window.confirm(
+        "¿Estás seguro de querer borrar tu cuenta? Esto no se puede revertir."
+      )
+    ) {
       return;
     }
 
     setDeleting(true);
-    setError('');
+    setError("");
 
     try {
-      await api.deleteUser(userId);
+      await userService.deleteUser(userId);
       logout();
-      navigate('/login');
+      navigate("/login");
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al borrar la cuenta');
+      setError(
+        err instanceof Error ? err.message : "Error al borrar la cuenta"
+      );
       setDeleting(false);
     }
   };
 
   const handleLogout = () => {
     logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   if (loading) {
@@ -150,19 +167,21 @@ export const Profile: React.FC = () => {
             <div className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Nombres</p>
-                  <p className="text-lg text-slate-900">
-                    {user?.firstName} 
+                  <p className="text-sm font-medium text-slate-600 mb-1">
+                    Nombres
                   </p>
+                  <p className="text-lg text-slate-900">{user?.firstName}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Apellidos</p>
-                  <p className="text-lg text-slate-900">
-                    {user?.lastName}
+                  <p className="text-sm font-medium text-slate-600 mb-1">
+                    Apellidos
                   </p>
+                  <p className="text-lg text-slate-900">{user?.lastName}</p>
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Nombre de usuario</p>
+                  <p className="text-sm font-medium text-slate-600 mb-1">
+                    Nombre de usuario
+                  </p>
                   <p className="text-lg text-slate-900">{user?.username}</p>
                 </div>
               </div>
@@ -175,19 +194,27 @@ export const Profile: React.FC = () => {
               {user?.dateOfBirth && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <p className="text-sm font-medium text-slate-600 mb-1">Fecha de Nacimiento</p>
+                    <p className="text-sm font-medium text-slate-600 mb-1">
+                      Fecha de Nacimiento
+                    </p>
                     <p className="text-lg text-slate-900">{user.dateOfBirth}</p>
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-slate-600 mb-1">Número de Teléfono</p>
-                    <p className="text-lg text-slate-900">{user.phoneNumber || 'No ingresado'}</p>
+                    <p className="text-sm font-medium text-slate-600 mb-1">
+                      Número de Teléfono
+                    </p>
+                    <p className="text-lg text-slate-900">
+                      {user.phoneNumber || "No ingresado"}
+                    </p>
                   </div>
                 </div>
               )}
 
               {user?.address && (
                 <div>
-                  <p className="text-sm font-medium text-slate-600 mb-1">Dirección</p>
+                  <p className="text-sm font-medium text-slate-600 mb-1">
+                    Dirección
+                  </p>
                   <p className="text-lg text-slate-900">{user.address}</p>
                 </div>
               )}
@@ -250,7 +277,7 @@ export const Profile: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Nombre de usuario
+                    Nombre de usuario
                   </label>
                   <input
                     type="text"
@@ -278,7 +305,7 @@ export const Profile: React.FC = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Fecha de Nacimiento
+                    Fecha de Nacimiento
                   </label>
                   <input
                     type="date"
@@ -291,7 +318,7 @@ export const Profile: React.FC = () => {
 
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-2">
-                  Número de Teléfono
+                    Número de Teléfono
                   </label>
                   <input
                     type="tel"
@@ -305,7 +332,7 @@ export const Profile: React.FC = () => {
 
               <div>
                 <label className="block text-sm font-medium text-slate-700 mb-2">
-                Dirección
+                  Dirección
                 </label>
                 <input
                   type="text"

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { User, Mail, Lock, Phone, MapPin, Calendar, Loader } from 'lucide-react';
-import { api } from '../services/api';
+import { userService } from "../services";
 
 export const Register: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -45,7 +45,7 @@ export const Register: React.FC = () => {
     setLoading(true);
 
     try {
-      await api.register({
+      await userService.register({
         firstName: formData.firstName,
         lastName: formData.lastName,
         email: formData.email,
