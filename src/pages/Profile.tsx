@@ -28,7 +28,6 @@ export const Profile: React.FC = () => {
     lastName: "",
     email: "",
     username: "",
-    password: "",
     dateOfBirth: "",
     address: "",
     phoneNumber: "",
@@ -50,7 +49,6 @@ export const Profile: React.FC = () => {
           lastName: `${userData.lastName || ""}`.trim(),
           email: userData.email || "",
           username: userData.username || "",
-          password: "",
           dateOfBirth: userData.dateOfBirth || "",
           address: userData.address || "",
           phoneNumber: userData.phoneNumber || "",
@@ -84,7 +82,7 @@ export const Profile: React.FC = () => {
       const updatedUser = await userService.getUserById(userId);
       setUser(updatedUser);
       setEditing(false);
-      setSuccess("Perfil actualizado exitósamente");
+      setSuccess("Perfil actualizado exitosamente");
       setTimeout(() => setSuccess(""), 3000);
     } catch (err) {
       setError(

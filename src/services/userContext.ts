@@ -5,6 +5,7 @@ import type {
   LoginResponse,
   User,
   ApiError,
+  UpdateUserRequest,
 } from "./types";
 
 // Specific URL for the Users Microservice
@@ -61,7 +62,7 @@ export const userService = {
 
   async updateUser(
     id: string,
-    data: Partial<CreateUserRequest>
+    data: Partial<UpdateUserRequest>
   ): Promise<User> {
     const userId = localStorage.getItem("userId");
     const url = new URL(`${USERS_API_URL}/user/${id}`);
