@@ -2,7 +2,7 @@
 # InsightFlow — Frontend Application
 
 Aplicación web desarrollada con **React + Vite**, que funciona como la interfaz oficial del ecosistema **InsightFlow**.
-Actualmente está integrada con el **Users Service**, y cuenta con despliegue automático en **Firebase Hosting** mediante CI/CD.
+Actualmente está integrada con el **Users Service**, **Document Service**, y cuenta con despliegue automático en **Firebase Hosting** mediante CI/CD.
 
 ---
 
@@ -90,12 +90,14 @@ cd insightflow-frontend
 npm install
 ```
 
-### 3. URL de User Service
+### 3. Configuración de servicios
 
-Por defecto apunta al backend en producción.
+El frontend consume microservicios desplegados en render. Las URLs base están configuradas en los archivos de servicio:
 
 ```
 VITE_API_URL=https://insightflow-users-service.onrender.com
+
+DOCUMENTS_API_URL=https://document-service-backend.onrender.com
 ```
 
 ### 4. Ejecutar la app
@@ -112,11 +114,11 @@ http://localhost:5173
 
 ---
 
-## Integración con Servicios (Users Service)
+## Integración con Servicios
 
-El frontend implementa todas las operaciones del backend de usuarios.
+El frontend implementa la comunicación con los siguientes microservicios.
 
-### Endpoints Consumidos
+### 1. User Service
 
 #### Registro
 
@@ -138,8 +140,30 @@ El frontend implementa todas las operaciones del backend de usuarios.
 
 #### Eliminación de Cuenta
 
-**DELETE /user/{id}?requestUserId={id}`**
+**DELETE /user/{id}?requestUserId={id}`** 
 → Logout automático.
+
+### 2. Document Service
+
+#### Obtener Todos los Documentos
+
+**GET /documents**
+
+#### Obtener un Documento en específico
+
+**GET /documents/{id}**
+
+#### Crear un Documento
+
+**POST /documents**
+
+#### Actualizar un Documento
+
+**PATCH /documents/{id}**
+
+#### Eliminar un Documento
+
+**DELETE /documents/{id}**
 
 ---
 
@@ -147,13 +171,21 @@ El frontend implementa todas las operaciones del backend de usuarios.
 
 ```
 src/
-├── components/         # Componentes reutilizables (ProtectedRoute, Layouts, etc.)
+├── components/         # Componentes reutilizables (ProtectedRoute, NavBar, etc.)
 ├── context/            # AuthContext (estado global)
-├── pages/              # Vistas principales (Login, Register, Profile)
+├── pages/              # Vistas principales
+│   ├── Login.tsx
+│   ├── Register.tsx
+│   ├── Profile.tsx
+│   ├── DocumentList.tsx
+│   ├── DocumentDetail.tsx
+│   ├── DocumentCreate.tsx 
+│   └── Workspace.tsx
 ├── services/           # Comunicación con APIs REST
-│   ├── apicontext.ts   # Funciones y headers base
-│   ├── userservice.ts  # Integración con Users Service
-│   └── api.ts          # Configuración del cliente HTTP
+│   ├── userContext.ts      # Integración con Users Service
+│   ├── documentContext.ts  # Integración con Documents Service
+│   ├── helpers.ts          # Headers y utilidades
+│   └── index.ts            # Barril de exportación
 ├── types/              # Interfaces/DTOs compartidos
 └── App.tsx             # Rutas principales de la aplicación
 ```
