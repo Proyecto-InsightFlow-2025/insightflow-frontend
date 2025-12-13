@@ -4,7 +4,9 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { Profile } from './pages/Profile';
-import { Documents } from './pages/Documents';
+import DocumentsListPage from './pages/DocumentList';
+import DocumentDetailPage from './pages/DocumentDetail';
+import CreateDocumentPage from './pages/DocumentCreate';
 import { NavBar } from './components/NavBar';
 import { Workspace } from './pages/Workspace';
 
@@ -28,7 +30,23 @@ function App() {
             path="/documents"
             element={
               <ProtectedRoute>
-                <Documents />
+                <DocumentsListPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/documents/:id"
+            element={
+              <ProtectedRoute>
+                <DocumentDetailPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/documents/new"
+            element={
+              <ProtectedRoute>
+                <CreateDocumentPage />
               </ProtectedRoute>
             }
           />
