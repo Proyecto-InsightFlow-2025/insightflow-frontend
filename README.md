@@ -165,6 +165,30 @@ El frontend implementa la comunicación con los siguientes microservicios.
 
 **DELETE /documents/{id}**
 
+
+### 3. Workspace Service
+
+#### Obtener todos los Workspace del usuario
+**GET /Workspaces**
+
+#### Obtener un Workspace Especifico
+
+**GET /Workspaces/{id}**
+
+#### Crear Workspace
+
+**POST /Workspaces**
+
+#### Actualizar Workspace 
+
+**PATCH /Workspaces/{id}**
+
+
+#### Eliminar un Workspace
+
+**DELETE /Workspaces/{id}**
+
+
 ---
 
 ## Estructura del Proyecto
@@ -172,6 +196,10 @@ El frontend implementa la comunicación con los siguientes microservicios.
 ```
 src/
 ├── components/         # Componentes reutilizables (ProtectedRoute, NavBar, etc.)
+|   └── WorkspaceList   # Paneles flotantes para servicio Workspace.
+|       ├── WorkspaceCard.tsx
+|       ├── WorkspaceDetailModal.tsx
+|       └── WorkspaceEditModal.tsx
 ├── context/            # AuthContext (estado global)
 ├── pages/              # Vistas principales
 │   ├── Login.tsx
@@ -180,12 +208,14 @@ src/
 │   ├── DocumentList.tsx
 │   ├── DocumentDetail.tsx
 │   ├── DocumentCreate.tsx 
-│   └── Workspace.tsx
+│   ├── Workspace.tsx
+|   └── WorkList.tsx
 ├── services/           # Comunicación con APIs REST
 │   ├── userContext.ts      # Integración con Users Service
 │   ├── documentContext.ts  # Integración con Documents Service
 │   ├── helpers.ts          # Headers y utilidades
-│   └── index.ts            # Barril de exportación
+│   ├── workspaceContext.ts # Integracion con Workspace Service
+|   └── index.ts            # Barril de exportación
 ├── types/              # Interfaces/DTOs compartidos
 └── App.tsx             # Rutas principales de la aplicación
 ```
